@@ -61,24 +61,21 @@ public:
     // U2: Actel’s ACT 1 logic module
     // U3: H-bridge function
 
-    Gate(unsigned id, Type type, std::string name);
+    Gate(unsigned _id, Type _type, std::string _name);
     ~Gate() {;}
-    friend class Circuit;
 
-    std::string report() const { return _name; }
-
-private:
-    unsigned int _id;
-    std::string _name;
-    Type _type;
+    unsigned int id;
+    std::string name;
+    Type type;
+    int hash; // for structural hash
 };
 
-inline Gate::Gate(unsigned id = 0,
-                  Type type = NON,
-                  std::string name = "") {
-    _id = id;
-    _type = type;
-    _name = name;
+inline Gate::Gate(unsigned _id = 0,
+                  Type _type = NON,
+                  std::string _name = "") {
+    id = _id;
+    type = _type;
+    name = _name;
 }
 
 

@@ -29,6 +29,8 @@ public:
     void writeVerilog(string fileName);
 
 private:
+    void convertToNand();
+    
     AdjacencyList<Gate*> _b; // Backward adjacency list
     AdjacencyList<Gate*> _f; // Forward adjacency list
 };

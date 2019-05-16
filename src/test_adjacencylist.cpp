@@ -29,10 +29,16 @@ int main() {
     al.insertUnder(&xg, &ag).insertUnder(&xg, &og);
     al.insertUnder(&po, &xg);
 
+    al.report();
+
     al.remove(&ag);
     al.removeUnder(&po, &xg);
     al.removeUnder(&pi1, &xg); // not actually under that
     al.remove(&ag); // not in the list
+    al.removeNeighbor(&pi2);
+    al.removeNeighbor(&po); // no neighbor to remove
+    al.insertUnder(&po, &pi2);
+    al.insertUnder(&po, &pi2); // already in it
 
     al.report();
 }

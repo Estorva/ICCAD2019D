@@ -99,7 +99,6 @@ public:
     };
 
 
-
     bool              empty() const { return _v.size() <= 1; }
     Iterator          end() const   { return Iterator(Iterator::_e); }
     Iterator          find(T) const;
@@ -108,9 +107,13 @@ public:
     AdjacencyList<T>& insert(T);
     AdjacencyList<T>& insertUnder(T, T);
     AdjacencyList<T>& remove(T);
+    AdjacencyList<T>& removeNeighbor(T);
     AdjacencyList<T>& removeUnder(T, T);
     void              report() const;
     size_t            size() const  { return _v.size(); }
+
+    typename std::vector<T>::iterator vBegin() { return _v.begin(); }
+    typename std::vector<T>::iterator vEnd() { return _v.end(); }
 
 
 private:
@@ -167,6 +170,7 @@ template<class T>
 inline AdjacencyList<T>& AdjacencyList<T>::insert(T t) {
     // Insert t into adjacency list
     auto *n = new AdjacencyNode<T>(t);
+
     for (auto it = _v.begin(); it != _v.end(); it++) {
         if (**it == *n) return *this;
         // Dont insert if it is already in the vector
@@ -179,11 +183,11 @@ template<class T>
 inline AdjacencyList<T>& AdjacencyList<T>::insertUnder(T u, T t) {
     // Insert u under t
     // If t is absent: create one
-    // If u is present: do nothing
     auto it = find(t);
     auto *m = new AdjacencyNode<T>(u);
 
     if (it == end()) {
+        // Create a new node whose next is u, push it into the vector
         auto *n = new AdjacencyNode<T>(t, m);
         _v.push_back(n);
     }
@@ -209,32 +213,63 @@ inline AdjacencyList<T>& AdjacencyList<T>::remove(T t) {
 }
 
 template<class T>
+inline AdjacencyList<T>& AdjacencyList<T>::removeNeighbor(T t) {
+    // Remove all adjacency vertices of this vertex
+    auto it = find(t);
+    std::vector<AdjacencyNode<T>*> gv; // garbage vector
+    gv.clear();
+
+    if (it == end()) return *this; // t not found
+
+    while (it._n->_next != NULL) {
+        it++;
+        gv.push_back(it._n);
+    }
+
+    while(!gv.empty()) {
+        delete gv.back();
+        gv.pop_back();
+    }
+
+    it = find(t);
+    it._n->_next = NULL;
+
+    return *this;
+}
+
+template<class T>
 inline AdjacencyList<T>& AdjacencyList<T>::removeUnder(T u, T t) {
     // Remove u from the list whose head is t
+    // If there are multiple instances of u under t, use isUnder to check
     auto it1 = find(t);
-    auto it2 = find(t);
+    auto it2 = it1;
+    AdjacencyNode<T>* garbage = 0;
 
-    if (it1 != end()) {
-        while (it1._n->_next != NULL) {
-            it1++;
-            if (*it1 == u) {
-                it2._n->_next = it1._n->_next;
-            }
-            it2++;
+    if (it1 == end()) return *this; // t not found
+
+    while (it1._n->_next != NULL) {
+        it1++; // it1 leads it2 by 1 node
+        if (*it1 == u) {
+            garbage = it1._n;
+            it2._n->_next = it1._n->_next;
+            break;
         }
+        it2++;
     }
+
+    if (garbage) delete garbage;
     return *this;
 }
 
 template<class T>
 inline void AdjacencyList<T>::report() const {
     for (auto i = _v.begin(); i != _v.end(); i++) {
-        std::cout << "Gate " << (***i)->report() << " is connected to:" << std::endl;
+        std::cout << "Gate " << (***i)->name << " is connected to:" << std::endl;
         std::cout << "    ";
         Iterator j(*i); // j points to what i points to
         j++; // skip self
         for (; j != end(); j++) {
-            std::cout << (*j)->report() << " "; // calls report() of Gate
+            std::cout << (*j)->name << " "; // calls report() of Gate
         }
         std::cout << std::endl;
     }
