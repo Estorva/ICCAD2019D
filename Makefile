@@ -62,4 +62,5 @@ obj:
 
 clean:
 	@# removes all *.o files and binary files under bin/
-	rm -rf obj bin
+	rm -rf obj bin $(EXEC) al
+
