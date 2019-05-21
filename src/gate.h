@@ -55,7 +55,9 @@ public:
         U2,
         U3,
         PI,
-        PO
+        PO,
+        HIGH,
+        LOW
     };
     // U1: 4to1 MUX
     // U2: Actel’s ACT 1 logic module

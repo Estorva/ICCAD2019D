@@ -2,8 +2,12 @@
 #define _SOLVER_H_
 
 #include <iostream>
+#include <string>
 #include "adjacencylist.h"
 #include "gate.h"
+
+using std::string;
+using std::vector;
 
 /*******************************************************************************
     Filename:   solver.h
@@ -21,18 +25,28 @@
 
 class Solver {
 public:
-    Solver() {;}
+    Solver();
     ~Solver() {;}
 
+    void initial(); // dummy debugging function
     void readVerilog(string fileName);
+    void report();
     void optimize();
     void writeVerilog(string fileName);
 
 private:
     void convertToNand();
-    
+    void convertToUni();
+    void pair(Gate*, Gate*);
+    Gate* newGate(Gate::Type, string = "");
+
     AdjacencyList<Gate*> _b; // Backward adjacency list
     AdjacencyList<Gate*> _f; // Forward adjacency list
+
+    Gate* _const0;
+    Gate* _const1;
+
+    vector<size_t> _available_id;
 };
 
-#endif _SOLVER_H_
+#endif // _SOLVER_H_

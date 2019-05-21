@@ -65,7 +65,7 @@ public:
         // Iterates through a chain of adjacent vertices
         // Usage:   Iterator it = list.find(a);
         //          for (; it != list.end(); it++)
-
+    public:
                   Iterator(AdjacencyNode<T>* n = 0) : _n(n) {;}
                   Iterator(const Iterator& i) : _n(i._n) {;}
                   ~Iterator() {;}
@@ -99,6 +99,7 @@ public:
     };
 
 
+    void              clear() { _v.clear(); }
     bool              empty() const { return _v.size() <= 1; }
     Iterator          end() const   { return Iterator(Iterator::_e); }
     Iterator          find(T) const;
@@ -106,14 +107,15 @@ public:
     bool              isUnder(T, T) const;
     AdjacencyList<T>& insert(T);
     AdjacencyList<T>& insertUnder(T, T);
+    T                 operator[] (int i) { return **(_v[i]); }
     AdjacencyList<T>& remove(T);
     AdjacencyList<T>& removeNeighbor(T);
     AdjacencyList<T>& removeUnder(T, T);
     void              report() const;
     size_t            size() const  { return _v.size(); }
 
-    typename std::vector<T>::iterator vBegin() { return _v.begin(); }
-    typename std::vector<T>::iterator vEnd() { return _v.end(); }
+    typename std::vector<AdjacencyNode<T>*>::iterator vBegin() { return _v.begin(); }
+    typename std::vector<AdjacencyNode<T>*>::iterator vEnd() { return _v.end(); }
 
 
 private:
@@ -264,12 +266,11 @@ inline AdjacencyList<T>& AdjacencyList<T>::removeUnder(T u, T t) {
 template<class T>
 inline void AdjacencyList<T>::report() const {
     for (auto i = _v.begin(); i != _v.end(); i++) {
-        std::cout << "Gate " << (***i)->name << " is connected to:" << std::endl;
-        std::cout << "    ";
+        std::cout << "Gate \"" << (***i)->name << "\"(" << (***i)->id << ") is connected to:" << std::endl;
         Iterator j(*i); // j points to what i points to
         j++; // skip self
         for (; j != end(); j++) {
-            std::cout << (*j)->name << " "; // calls report() of Gate
+            std::cout << "    \"" << (*j)->name << "\"(" << (*j)->id << ")" << std::endl; // calls report() of Gate
         }
         std::cout << std::endl;
     }
