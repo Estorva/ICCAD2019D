@@ -22,18 +22,22 @@ all: EXEC = $(OPT_DIR)/$(EXEC)
 dbg al: CFLAGS += -g3 -O0 -ggdb $(addprefix -D, $(DBGFLAG))
 dbg: EXEC = $(DBG_DIR)/$(EXEC)
 
-all: $(OPT_EXEC) | $(OPT_DIR)
+all: $(OPT_EXEC)
 	@# Link the exec from under bin to here
 	@ln -sf $< .
 
-dbg: $(DBG_EXEC) | $(DBG_DIR)
+dbg: $(DBG_EXEC)
 	@ln -sf $< .
 
-$(OPT_EXEC) $(DBG_EXEC): $(MAIN_CPP) $(OFILE) | obj
+$(OPT_EXEC): $(MAIN_CPP) $(OFILE) | $(OPT_DIR)
 	$(CC) $(CFLAGS) -c $(MAIN_CPP) -o $(MAIN_O)
 	$(CC) $(CFLAGS) $(MAIN_O) $(OFILE) -o $@
 
-obj/%.o: src/%.cpp src/%.h
+$(DBG_EXEC): $(MAIN_CPP) $(OFILE) | $(DBG_DIR)
+	$(CC) $(CFLAGS) -c $(MAIN_CPP) -o $(MAIN_O)
+	$(CC) $(CFLAGS) $(MAIN_O) $(OFILE) -o $@
+
+obj/%.o: src/%.cpp src/%.h | obj
 	$(CC) $(CFLAGS) -c $< -o $@
 
 al: $(DBG_DIR)/al
@@ -53,6 +57,8 @@ $(DBG_DIR): | $(BIN_DIR)
 $(BIN_DIR):
 	mkdir $(BIN_DIR)
 
+obj:
+	mkdir obj
 
 clean:
 	@# removes all *.o files and binary files under bin/
