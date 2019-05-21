@@ -1,0 +1,11 @@
+# Put files here to make git ignore them
+# * and / are available
+
+# All .o files
+*.o
+
+# Files under bin/
+/bin/
+/obj/
+
+GIT_TUTORIAL
